@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -27,6 +29,17 @@ func main() {
 
 	// Send request to Twilio API
 	resp, _ := client.Do(req)
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		var data map[string]interface{}
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		err := json.Unmarshal(bodyBytes, &data)
+		if err == nil {
+			fmt.Println(data["sid"])
+		}
+	} else {
+		fmt.Println(resp.Status)
+	}
 	fmt.Println(resp.Status)
 
 }
